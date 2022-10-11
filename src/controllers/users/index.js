@@ -35,25 +35,46 @@ const getUser = async (req, res) => {
 
     try {
 
-        const user = await knex.select('id', 'nome', 'email').from('users').where({ id }).first();
+        const userFound = await knex.select('id', 'nome', 'email').from('users').where({ id }).first();
 
-        if (!user) {
-            return res.status(404).json({ message: "usuário não encontrado." });
+        if (!userFound) {
+            return res.status(404).json({ message: "usuário não encontrado." })
         }
 
-        return res.status(200).json(user);
+        return res.status(200).json(userFound);
 
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 }
 
-const getAllUsers = async (req, res) => {
-
-}
-
 const updateUser = async (req, res) => {
+    const { id } = req.params;
+    const { nome, senha } = req.body;
 
+    try {
+
+        const userFound = await knex('users').where({ id }).first();
+
+        if (!userFound) {
+            return res.status(404).json({ message: "usuário não encontrado." })
+        }
+
+        let newName = nome || userFound.nome;
+        let newPassword = await bcrypt.hash(senha, 10) || userFound.senha;
+
+
+        const updatedUser = await knex('users').where({ id }).update({ nome: newName, senha: newPassword }).returning(['id', 'nome', 'email']);
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "Não foi possível atualizar o usuário." })
+        }
+
+        return res.status(200).json({ updatedUser })
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
 }
 
 const deleteUser = async (req, res) => {
@@ -63,7 +84,6 @@ const deleteUser = async (req, res) => {
 module.exports = {
     createUser,
     getUser,
-    getAllUsers,
     updateUser,
     deleteUser
 }
