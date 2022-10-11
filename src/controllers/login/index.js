@@ -3,8 +3,8 @@ const bcrypt = require('bcrypt');
 const knex = require('../../connection');
 
 const login = async (req, res) => {
-    const { email, senha } = req.body;
-    if (!email || !senha) {
+    const { email, password } = req.body;
+    if (!email || !password) {
         return res.status(400).json({ "message": "Email e senha são obrigatórios." });
     }
 
@@ -16,13 +16,13 @@ const login = async (req, res) => {
             return res.status(400).json({ message: "usuário ou senha inválido." })
         }
 
-        const passwordVerified = await bcrypt.compare(senha, user.senha);
+        const passwordVerified = await bcrypt.compare(password, user.password);
 
         if (!passwordVerified) {
             return res.status(400).json({ message: "usuário ou senha inválido." })
         }
 
-        const { senha: _, ...userLogin } = user;
+        const { password: _, ...userLogin } = user;
 
         const token = jwt.sign({
             id: user.id

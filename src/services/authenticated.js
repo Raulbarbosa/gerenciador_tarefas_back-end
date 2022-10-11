@@ -5,7 +5,7 @@ const authenticated = async (req, res, next) => {
     const { authorization } = req.headers;
 
     if (!authorization) {
-        return res.status(401).json({ message: "Não autorizado." })
+        return res.status(401).json({ message: "Not authorized." })
     }
 
     try {
@@ -16,7 +16,7 @@ const authenticated = async (req, res, next) => {
         const user = await knex('users').where({ id }).first();
 
         if (!user) {
-            return res.status(404).json({ message: "Usuário não encontrado." })
+            return res.status(404).json({ message: "User not found." })
         }
 
         const { senha: _, ...userFound } = user;
