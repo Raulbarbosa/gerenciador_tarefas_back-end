@@ -15,7 +15,7 @@ routes.get('/users', getUser);
 routes.put('/users', updateUser);
 routes.delete('/users', deleteUser);
 
-routes.get('/tasks', getTask);
+routes.get('/tasks/:id', getTask);
 routes.get('/tasks', getAllTasks);
 routes.post('/tasks', createTask);
 routes.put('/tasks/:id', updateTask);

@@ -39,7 +39,28 @@ const createTask = async (req, res) => {
 }
 
 const getTask = async (req, res) => {
+    const { id } = req.user;
+    const { id: id_task } = req.params;
 
+    try {
+
+        const user = await knex('users').where({ id }).first();
+
+        if (!user) {
+            return res.status(400).json({ message: "User not found." })
+        }
+
+        const task = await knex('tasks').where('id', id_task).where('user_id', id).first();
+
+        if (!task) {
+            return res.status(400).json({ message: "Task not found." })
+        }
+
+        return res.status(200).json(task)
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
 }
 
 const getAllTasks = async (req, res) => {
