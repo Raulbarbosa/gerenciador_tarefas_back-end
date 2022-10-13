@@ -124,6 +124,27 @@ const updateTask = async (req, res) => {
 }
 
 const deleteTask = async (req, res) => {
+    const { id } = req.user;
+    const { id: id_task } = req.params;
+
+    try {
+        const user = await knex('users').where({ id }).first();
+
+        if (!user) {
+            return res.status(400).json({ message: "User not found." })
+        }
+
+        const task = await knex('tasks').where('id', id_task).where('user_id', id).del();
+
+        if (task === 0) {
+            return res.status(400).json({ message: "Could not delete task." })
+        }
+
+        return res.status(200).json({ message: "Task successfully deleted." })
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
 
 }
 
