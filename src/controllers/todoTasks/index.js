@@ -83,12 +83,44 @@ const getAllTasks = async (req, res) => {
         return res.status(200).json(tasks)
 
     } catch (error) {
-        return res.status(500).json({ message: error.message })
+        return res.status(500).json({ message: error.message });
     }
 }
 
 const updateTask = async (req, res) => {
+    const { id } = req.user;
+    const { id: id_task } = req.params;
+    const { description, date_finish } = req.body;
 
+    try {
+
+        const user = await knex('users').where({ id }).first();
+
+        if (!user) {
+            return res.status(400).json({ message: "User not found." })
+        }
+
+        const task = await knex('tasks').where('id', id_task).where('user_id', id).first();
+
+        if (!task) {
+            return res.status(400).json({ message: "Task not found." })
+        }
+
+        let newDescription = description || task.description;
+        let newDate_finish = date_finish || task.date_finish;
+
+        const updatedTask = await knex('tasks').where('id', id_task).where('user_id', id).update({ description: newDescription, date_finish: newDate_finish }).returning(['id', 'description', 'date_finish']);
+
+        if (!updatedTask) {
+            return res.status(404).json({ message: "Could not update task." })
+        }
+
+        return res.status(200).json(updatedTask)
+
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
 }
 
 const deleteTask = async (req, res) => {
