@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS users(
 	id serial primary key,
-    nome text not null,
+    name text not null,
     email text unique not null,
-    senha text not null
+    password text not null
 );
 
 CREATE TABLE IF NOT EXISTS tasks(
